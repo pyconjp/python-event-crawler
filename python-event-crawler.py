@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 
 from datetime import datetime
+from operator import itemgetter
 
 import requests
 from dateutil.relativedelta import relativedelta
+from dateutil.parser import parse
 
 # keywords for event search
 KEYWORDS = ('python', 'pycon', 'sphinx', 'ansible',
             'django', 'pyramind', 'pydata')
+
+WEEKDAY = ('月','火','水','木','金','土','日')
 
 def get_connpass_event(keywords, ym):
     """
@@ -17,7 +21,7 @@ def get_connpass_event(keywords, ym):
     :param keywords: keywords for event search
     :param ym: event ym(e.g.: 201605)
     """
-    result = []
+    events = []
     payload = {
         'keyword_or': keywords,
         'count': 100,
@@ -29,12 +33,12 @@ def get_connpass_event(keywords, ym):
         event_dict = {
             'title': event['title'],
             'url': event['event_url'],
-            'date': event['started_at'],
+            'date': parse(event['started_at']),
             'address': event['address'],
         }
-        result.append(event_dict)
+        events.append(event_dict)
 
-    return result
+    return events
       
 def get_atnd_event(keywords, ym):
     """
@@ -44,7 +48,7 @@ def get_atnd_event(keywords, ym):
     :param keywords: keywords for event search
     :param ym: event ym(e.g.: 201605)
     """
-    result = []
+    events = []
     payload = {
         'keyword_or': keywords,
         'count': 100,
@@ -57,12 +61,12 @@ def get_atnd_event(keywords, ym):
         event_dict = {
             'title': event['event']['title'],
             'url': event['event']['event_url'],
-            'date': event['event']['started_at'],
+            'date': parse(event['event']['started_at']),
             'address': event['event']['address'],
         }
-        result.append(event_dict)
+        events.append(event_dict)
       
-    return result
+    return events
 
 
 def get_doorkeeper_event(keywords, ym):
@@ -73,7 +77,7 @@ def get_doorkeeper_event(keywords, ym):
     :param keywords: keywords for event search
     :param ym: event ym(e.g.: 201605)
     """
-    result = []
+    events = []
 
     since = datetime(ym // 100, ym % 100, 1)
     until = since + relativedelta(months=+1)
@@ -90,17 +94,43 @@ def get_doorkeeper_event(keywords, ym):
             event_dict = {
                 'title': event['event']['title'],
                 'url': event['event']['public_url'],
-                'date': event['event']['starts_at'],
+                'date': parse(event['event']['starts_at']),
                 'address': event['event']['address'],
             }
-            result.append(event_dict)
+            events.append(event_dict)
 
-    return result
+    return events
+
+
+def format_date(date):
+    """
+    convert date to date string(e.g.: 4月5日(火))
+    """
+    weekday = WEEKDAY[date.weekday()]
+    date_str = '{:d}月{:d}日({})'.format(date.month, date.day, weekday)
+
+    return date_str
+
+
+def convert_place(address):
+    place = address
+
+    return place
 
 def main():
-    print(len(get_connpass_event(KEYWORDS, 201604)))
-    print(len(get_atnd_event(KEYWORDS, 201604)))
-    print(len(get_doorkeeper_event(KEYWORDS, 201604)))
 
+    events = []
+    #events = get_connpass_event(KEYWORDS, 201604)
+    events.extend(get_atnd_event(KEYWORDS, 201604))
+    #events.extend(get_doorkeeper_event(KEYWORDS, 201604))
+    # sort by date
+    events.sort(key=itemgetter('date'))
+    print('<ul>')
+    for event in events:
+        date_str = format_date(event['date'])
+        place = convert_place(event['address'])
+        print('<li>{0} <a href="{url}">{title}</a> ({1})</li>'.format(date_str, place, **event))
+    print('</ul>')
+      
 if __name__ == '__main__':
     main()
