@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 from datetime import datetime
 from operator import itemgetter
 
@@ -134,9 +135,11 @@ def convert_place(address):
 
     return place
 
-def main():
+def main(ym):
+    """
+    :param ym: target year and month with 6 digits(e.g.: 201605)
+    """
 
-    ym = 201604
     events = []
     events += connpass_events(KEYWORDS, ym)
     events += atnd_events(KEYWORDS, ym)
@@ -155,4 +158,15 @@ def main():
     print('</ul>')
       
 if __name__ == '__main__':
-    main()
+
+    # default ym is next month
+    next_month = datetime.now() + relativedelta(months=+1)
+    default_ym = next_month.year * 100 + next_month.month
+
+    help_text = 'target year and month by 6 digits(default: {:d})'
+    parser = argparse.ArgumentParser()
+    parser.add_argument("ym", type=int, nargs='?', default=default_ym,
+                        help=help_text.format(default_ym))
+    args = parser.parse_args()
+    
+    main(args.ym)
