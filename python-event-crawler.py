@@ -13,7 +13,7 @@ KEYWORDS = ('python', 'pycon', 'sphinx', 'ansible',
 
 WEEKDAY = ('月','火','水','木','金','土','日')
 
-def get_connpass_event(keywords, ym):
+def connpass_events(keywords, ym):
     """
     get connpass events by keywords
     API reference: http://connpass.com/about/api/
@@ -40,7 +40,7 @@ def get_connpass_event(keywords, ym):
 
     return events
       
-def get_atnd_event(keywords, ym):
+def atnd_events(keywords, ym):
     """
     get atnd events by keywords
     API reference: http://api.atnd.org/#events-query
@@ -69,7 +69,7 @@ def get_atnd_event(keywords, ym):
     return events
 
 
-def get_doorkeeper_event(keywords, ym):
+def doorkeeper_events(keywords, ym):
     """
     get doorkeeper events by keywords
     API reference: http://www.doorkeeperhq.com/developer/api
@@ -113,23 +113,45 @@ def format_date(date):
 
 
 def convert_place(address):
+    """
+    convert address to place
+
+    >>> convert_place('東京都台東区浅草橋5-4-5')
+    '東京都'
+    >>> convert_place('大阪府大阪市福島区福島5丁目')
+    '大阪府大阪市'
+    >>> convert_place('京都市中京区末丸町')
+    '京都市'
+    """
+
     place = address
+
+    if address:
+        if '東京都' in address:
+            place = '東京都'
+        elif '市' in address:
+            place = address[:address.find('市') + 1]
 
     return place
 
 def main():
 
+    ym = 201604
     events = []
-    #events = get_connpass_event(KEYWORDS, 201604)
-    events.extend(get_atnd_event(KEYWORDS, 201604))
-    #events.extend(get_doorkeeper_event(KEYWORDS, 201604))
+    events += connpass_events(KEYWORDS, ym)
+    events += atnd_events(KEYWORDS, ym)
+    events += doorkeeper_events(KEYWORDS, ym)
+
+    print('<ul>')
+
+    EVENT_HTML = '<li>{date_str} <a href="{url}">{title}</a> ({place})</li>'
     # sort by date
     events.sort(key=itemgetter('date'))
-    print('<ul>')
     for event in events:
-        date_str = format_date(event['date'])
-        place = convert_place(event['address'])
-        print('<li>{0} <a href="{url}">{title}</a> ({1})</li>'.format(date_str, place, **event))
+        event['date_str'] = format_date(event['date'])
+        event['place'] = convert_place(event['address'])
+        print(EVENT_HTML.format(**event))
+
     print('</ul>')
       
 if __name__ == '__main__':
