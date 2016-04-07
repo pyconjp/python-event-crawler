@@ -118,7 +118,7 @@ def convert_place(address):
     convert address to place
 
     >>> convert_place('東京都台東区浅草橋5-4-5')
-    '東京都'
+    '東京'
     >>> convert_place('大阪府大阪市福島区福島5丁目')
     '大阪府大阪市'
     >>> convert_place('京都市中京区末丸町')
@@ -129,7 +129,7 @@ def convert_place(address):
 
     if address:
         if '東京都' in address:
-            place = '東京都'
+            place = '東京'
         elif '市' in address:
             place = address[:address.find('市') + 1]
 
