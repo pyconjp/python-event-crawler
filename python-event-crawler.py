@@ -159,8 +159,8 @@ def main(ym):
       
 if __name__ == '__main__':
 
-    # default ym is next month
-    next_month = datetime.now() + relativedelta(months=+1)
+    # default ym is current month
+    next_month = datetime.now()
     default_ym = next_month.year * 100 + next_month.month
 
     help_text = 'target year and month by 6 digits(default: {:d})'
