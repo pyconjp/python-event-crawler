@@ -17,7 +17,7 @@ WEEKDAY = ('月','火','水','木','金','土','日')
 def connpass_events(keywords, ym):
     """
     get connpass events by keywords
-    API reference: http://connpass.com/about/api/
+    API reference: https://connpass.com/about/api/
 
     :param keywords: keywords for event search
     :param ym: event ym(e.g.: 201605)
@@ -28,7 +28,7 @@ def connpass_events(keywords, ym):
         'count': 100,
         'ym': ym,
     }
-    r = requests.get('http://connpass.com/api/v1/event/', params=payload)
+    r = requests.get('https://connpass.com/api/v1/event/', params=payload)
     responce = r.json()
     for event in responce['events']:
         event_dict = {
