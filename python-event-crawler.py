@@ -12,7 +12,8 @@ from dateutil.parser import parse
 KEYWORDS = ('python', 'pycon', 'sphinx', 'ansible',
             'django', 'pyramind', 'pydata')
 
-WEEKDAY = ('月','火','水','木','金','土','日')
+WEEKDAY = '月火水木金土日'
+
 
 def connpass_events(keywords, ym):
     """
@@ -40,7 +41,8 @@ def connpass_events(keywords, ym):
         events.append(event_dict)
 
     return events
-      
+
+
 def atnd_events(keywords, ym):
     """
     get atnd events by keywords
@@ -66,7 +68,7 @@ def atnd_events(keywords, ym):
             'address': event['event']['address'],
         }
         events.append(event_dict)
-      
+
     return events
 
 
@@ -135,6 +137,7 @@ def convert_place(address):
 
     return place
 
+
 def main(ym):
     """
     :param ym: target year and month with 6 digits(e.g.: 201605)
@@ -156,7 +159,8 @@ def main(ym):
         print(EVENT_HTML.format(**event))
 
     print('</ul>')
-      
+
+
 if __name__ == '__main__':
 
     # default ym is current month
@@ -168,5 +172,5 @@ if __name__ == '__main__':
     parser.add_argument("ym", type=int, nargs='?', default=default_ym,
                         help=help_text.format(default_ym))
     args = parser.parse_args()
-    
+
     main(args.ym)
