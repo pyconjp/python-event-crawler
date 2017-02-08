@@ -12,7 +12,18 @@ from dateutil.parser import parse
 KEYWORDS = ('python', 'pycon', 'sphinx', 'ansible',
             'django', 'pyramind', 'pydata')
 
+# exclude keywords for event list
+EX_WORDS = ('pepper', )
+
 WEEKDAY = '月火水木金土日'
+
+
+def _has_ex_words(title):
+    title = title.lower()
+    for ex_word in EX_WORDS:
+        if ex_word in title:
+            return True
+    return False
 
 
 def connpass_events(keywords, ym):
@@ -32,13 +43,14 @@ def connpass_events(keywords, ym):
     r = requests.get('https://connpass.com/api/v1/event/', params=payload)
     responce = r.json()
     for event in responce['events']:
-        event_dict = {
-            'title': event['title'],
-            'url': event['event_url'],
-            'date': parse(event['started_at']),
-            'address': event['address'],
-        }
-        events.append(event_dict)
+        if not _has_ex_words(event['title']):
+            event_dict = {
+                'title': event['title'],
+                'url': event['event_url'],
+                'date': parse(event['started_at']),
+                'address': event['address'],
+            }
+            events.append(event_dict)
 
     return events
 
@@ -94,13 +106,14 @@ def doorkeeper_events(keywords, ym):
         r = requests.get('https://api.doorkeeper.jp/events/', params=payload)
         responce = r.json()
         for event in responce:
-            event_dict = {
-                'title': event['event']['title'],
-                'url': event['event']['public_url'],
-                'date': parse(event['event']['starts_at']),
-                'address': event['event']['address'],
-            }
-            events.append(event_dict)
+            if not _has_ex_words(event['event']['title']):
+                event_dict = {
+                    'title': event['event']['title'],
+                    'url': event['event']['public_url'],
+                    'date': parse(event['event']['starts_at']),
+                    'address': event['event']['address'],
+                }
+                events.append(event_dict)
 
     return events
 
