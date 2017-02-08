@@ -144,6 +144,8 @@ def convert_place(address):
     '大阪府大阪市'
     >>> convert_place('京都市中京区末丸町')
     '京都市'
+    >>> convert_place('渋谷区千駄ヶ谷5-32')
+    '東京'
     """
 
     place = address
