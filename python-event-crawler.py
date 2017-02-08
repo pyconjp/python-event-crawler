@@ -15,6 +15,12 @@ KEYWORDS = ('python', 'pycon', 'sphinx', 'ansible',
 # exclude keywords for event list
 EX_WORDS = ('pepper', )
 
+TOKYO_23KU = (
+    '千代田区', '中央区', '港区', '新宿区', '文京区', '台東区', '墨田区',
+    '江東区', '品川区', '目黒区', '大田区', '世田谷区', '渋谷区', '中野区',
+    '杉並区', '豊島区', '北区', '荒川区', '板橋区', '練馬区', '足立区',
+    '葛飾区', '江戸川区')
+
 WEEKDAY = '月火水木金土日'
 
 
@@ -147,6 +153,10 @@ def convert_place(address):
             place = '東京'
         elif '市' in address:
             place = address[:address.find('市') + 1]
+        if '区' in place:
+            place = place[:place.find('区') + 1]
+        if place in TOKYO_23KU:
+            place = '東京'
 
     return place
 
